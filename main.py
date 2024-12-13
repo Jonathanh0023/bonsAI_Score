@@ -203,7 +203,7 @@ Gesamt: [Zahl]
         # Nennungen-Eingabe mit Validierung
         nennungen = st.text_area(
             "Nennungen:",
-            placeholder="Gib hier die Antworten ein (eine pro Zeile, maximal 50)...",
+            placeholder="Gib hier die Antworten ein (eine pro Zeile, maximal 50). Du kannst die Nennungen am besten direkt aus Excel kopieren und dann hier einfügen. Bitte denke daran stichprobenartig vorzugehen...",
             height=200
         )
 
