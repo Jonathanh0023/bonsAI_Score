@@ -85,12 +85,6 @@ def check_password():
             st.text_input("Passwort", type="password", key="password")
             st.button("Einloggen", on_click=password_entered, use_container_width=True)
             st.error("😕 Benutzername oder Passwort falsch")
-            st.markdown("---")
-            st.markdown("""
-            **Verfügbare Benutzer:**
-            - admin
-            - test_user
-            """)
             return False
         else:
             # Password correct
