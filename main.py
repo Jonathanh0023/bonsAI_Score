@@ -75,12 +75,7 @@ def check_password():
             st.text_input("Benutzername", key="username", placeholder="admin oder test_user")
             st.text_input("Passwort", type="password", key="password")
             st.button("Einloggen", on_click=password_entered, use_container_width=True)
-            st.markdown("---")
-            st.markdown("""
-            **Verfügbare Benutzer:**
-            - admin
-            - test_user
-            """)
+
             return False
         elif not st.session_state["password_correct"]:
             # Password not correct, show input + error
