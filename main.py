@@ -57,8 +57,10 @@ def check_password():
     login_col1, login_col2, login_col3 = st.columns([1,2,1])
     
     with login_col2:
-        st.image("https://sw01.rogsurvey.de/data/bonsai/Kara_23_19/logo_Bonsa_BONSAI_neu.png", width=100)
-        st.markdown("### Anmeldung BonsAI_Score")
+        if "password_correct" not in st.session_state or not st.session_state["password_correct"]:
+            # Logo und Titel nur anzeigen, wenn noch nicht eingeloggt
+            st.image("https://sw01.rogsurvey.de/data/bonsai/Kara_23_19/logo_Bonsa_BONSAI_neu.png", width=100)
+            st.markdown("### Anmeldung BonsAI_Score")
         
         def password_entered():
             """Checks whether a password entered by the user is correct."""
