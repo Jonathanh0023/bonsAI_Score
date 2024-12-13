@@ -28,8 +28,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# API-Endpunkt
-url = 'https://8cjntf.buildship.run/liveCodierung'
+# API-Endpunkt aus Secrets laden statt direkt im Code
+url = st.secrets["api"]["url"]
 
 # Funktion zur Analyse einer Frage
 def analyze_question(frage, antwort):
