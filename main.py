@@ -164,7 +164,7 @@ Bewerte die gegebene Antwort anhand der folgenden Kriterien:
 5. **Sprache**: Entspricht die Sprache der Antwort der Sprache der Frage (z. B. Deutsch für eine deutsche Frage)?
 
 
-Nutze zur Bewertung eine Skala von 1 (sehr niedrig) bis 100 (sehr hoch) und gib die Bewertungen in dem folgenden Format an.
+Nutze zur Bewertung eine Skala von 1 (sehr niedrig) bis 100 (sehr hoch). Gib die Bewertungen ausschließlich in dieser Antwortsyntax an:
 
 # Antwortsyntax
 
