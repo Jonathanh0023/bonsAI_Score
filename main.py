@@ -34,9 +34,15 @@ url = st.secrets["api"]["url"]
 # Funktion zur Analyse einer Frage
 def analyze_question(frage, antwort):
     body = {
-        "message": f"Frage: {frage}. Antwort: {antwort}",
+        "message": f"Zu bewertende Frage: {frage}. Zu bewertende Antwort: {antwort}",
         "system_prompt": system_prompt
     }
+    
+    # Debug-Information in session_state speichern
+    if "debug_info" not in st.session_state:
+        st.session_state.debug_info = []
+    st.session_state.debug_info.append(body)
+    
     try:
         with st.spinner(f'Analysiere Antwort: "{antwort}"...'):
             response = requests.post(url, json=body)
@@ -112,6 +118,9 @@ if check_password():
 
     # Funktion zur Verarbeitung der Nennungen
     def process_nennungen():
+        # Debug-Info zurücksetzen
+        st.session_state.debug_info = []
+        
         antworten = [a.strip() for a in nennungen.splitlines() if a.strip()]
         progress_bar = st.progress(0)
         
@@ -232,6 +241,16 @@ Gesamt: [Zahl]
 
     with col2:
         st.subheader("📊 Ergebnisbereich")
+        
+        # Debug-Bereich
+        with st.expander("🔍 Debug-Informationen", expanded=False):
+            st.markdown("### API-Anfragen")
+            if "debug_info" in st.session_state and st.session_state.debug_info:
+                for idx, debug_data in enumerate(st.session_state.debug_info, 1):
+                    st.markdown(f"**Anfrage {idx}:**")
+                    st.code(str(debug_data), language="json")
+            else:
+                st.info("Noch keine Debug-Informationen verfügbar. Starte eine Analyse, um die API-Anfragen zu sehen.")
         
         # Ergebnisanzeige mit Live-Updates
         result_placeholder = st.empty()
