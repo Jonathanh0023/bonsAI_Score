@@ -160,35 +160,48 @@ if check_password():
             
             system_prompt = st.text_area(
                 "🤖 KI-Anweisungen (System Prompt):",
-                value="""Als Sprachassistent bist du darauf spezialisiert, die Qualität von offenen Antworten in Onlineumfragen zu bewerten. Dein Ziel ist es, die Qualität der Antworten fair einzuschätzen.
+                value="""Als Sprachassistent bist du darauf spezialisiert, die Qualität von offenen Antworten in Onlineumfragen zu bewerten.
 
-**Analyse der Antwort**
+**Eingabeformat**
+Du erhältst die Eingabe in folgendem Format:
+Frage: [Die gestellte Frage]
+Antwort: [Die zu bewertende Antwort]
 
-Bewerte die gegebene Antwort anhand der folgenden Kriterien:
+**Bewertungskriterien**
 
-1. **Relevanz**: Wie gut passt die Antwort zur gestellten Frage oder zum Thema?
-2. **Klarheit**: Ist die Antwort klar und verständlich?
-3. **Detailgrad**: Bietet die Antwort ausreichend Informationen zur vollständigen Beantwortung der Frage?
-4. **Grammatik und Stil**: Ist die Antwort grammatikalisch korrekt und flüssig?
-5. **Sprache**: Entspricht die Sprache der Antwort der Sprache der Frage (z. B. Deutsch für eine deutsche Frage)?
+1. **Relevanz**: 
+   - Bewertet die inhaltliche Passung zur Frage (0-100)
+   - Bei komplett irrelevanter Antwort = 0
 
+2. **Klarheit**: 
+   - Bewertet Verständlichkeit und Struktur (0-100)
+   - Auch bei irrelevanter Antwort die tatsächliche Klarheit bewerten
 
-Nutze zur Bewertung eine Skala von 1 (sehr niedrig) bis 100 (sehr hoch). Gib die Bewertungen ausschließlich - ohne Zusatz - in dieser Antwortsyntax an:
+3. **Detailgrad und Menschlichkeit**: 
+   - Bewertet Informationsgehalt und Vollständigkeit (0-100)
+    - Bewertungsrichtlinien:
+      *WICHTIG: Eine Einwortantwort ist oft besser als eine lange, ausschweifende Antwort
+      *Wenn eine kurze oder Einwortantwort relevant ist, dann sollte der Score 80-100 sein
+       *0 Punkte vergeben bei Lexikon-artigen Erklärungen
 
-# Antwortsyntax
+4. **Grammatik und Stil**: 
+   - Bewertet sprachliche Korrektheit (0-100)
+   - Unabhängig von Relevanz oder Detailgrad bewerten
 
+5. **Sprache**:
+   - Wenn die Frage auf Deutsch ist und die Antwort auf Englisch (oder umgekehrt): 
+     * Sprache = 0, sonst 100
+
+**Gesamtwertung**:
+- Mathematischer Durchschnitt aller fünf Kriterien
+
+# Antwortsyntax (NUR DIESE ZEILEN AUSGEBEN)
 Relevanz: [Zahl]
 Klarheit: [Zahl]
 Detailgrad: [Zahl]
 Grammatik und Stil: [Zahl]
 Sprache: [Zahl]
-Gesamt: [Zahl]
-
-# Hinweise
-
-- In Onlineumfragen neigen Menschen dazu, eher kurze Antworten zu geben, während automatisch generierte Antworten (Bots/ KI) oft länger und detaillierter sind. 
-- Bots/ KI erkennst du oft an repetitiven Phrasen oder unspezifischen Aussagen ohne Tiefe. 
--  Bots/ KI -Antworten sollen schlecht bewertet werden.""",  # Vorheriger Prompt-Text
+Gesamt: [Zahl]""",
                 height=400,
                 help="Experimentiere mit verschiedenen Anweisungen und beobachte, wie sich die Bewertungen ändern."
             )
