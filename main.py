@@ -225,21 +225,21 @@ Gesamt: [Zahl]""",
         # Nennungen-Eingabe mit Validierung
         nennungen = st.text_area(
             "Nennungen:",
-            placeholder="Gib hier die Antworten ein (eine pro Zeile, maximal 50). Du kannst die Nennungen am besten direkt aus Excel kopieren und dann hier einfügen. Bitte denke daran stichprobenartig vorzugehen...",
+            placeholder="Gib hier die Antworten ein (eine pro Zeile, maximal 1500). Du kannst die Nennungen am besten direkt aus Excel kopieren und dann hier einfügen.",
             height=200
         )
 
         # Validierung der Nennungen-Anzahl
         if nennungen:
             num_entries = count_valid_entries(nennungen)
-            if num_entries > 50:
-                st.error("⚠️ Maximale Anzahl von 50 Nennungen überschritten! Das Prompt soll stichprobenartig angewendet werden. Aktuell: " + str(num_entries))
-                st.warning("Bitte reduziere die Anzahl der Nennungen auf maximal 50.")
+            if num_entries > 1500:
+                st.error("⚠️ Maximale Anzahl von 1500 Nennungen überschritten! Aktuell: " + str(num_entries))
+                st.warning("Bitte reduziere die Anzahl der Nennungen auf maximal 1500.")
                 can_process = False
             else:
                 can_process = True
                 if num_entries > 0:
-                    st.info(f"Anzahl der Nennungen: {num_entries}/50")
+                    st.info(f"Anzahl der Nennungen: {num_entries}/1500")
 
         # Analyse-Button
         if st.button("Analyse starten", use_container_width=True):
