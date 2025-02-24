@@ -232,14 +232,14 @@ Gesamt: [Zahl]""",
         # Validierung der Nennungen-Anzahl
         if nennungen:
             num_entries = count_valid_entries(nennungen)
-            if num_entries > 1500:
-                st.error("⚠️ Maximale Anzahl von 1500 Nennungen überschritten! Aktuell: " + str(num_entries))
-                st.warning("Bitte reduziere die Anzahl der Nennungen auf maximal 1500.")
+            if num_entries > 2500:
+                st.error("⚠️ Maximale Anzahl von 2500 Nennungen überschritten! Aktuell: " + str(num_entries))
+                st.warning("Bitte reduziere die Anzahl der Nennungen auf maximal 2500.")
                 can_process = False
             else:
                 can_process = True
                 if num_entries > 0:
-                    st.info(f"Anzahl der Nennungen: {num_entries}/1500")
+                    st.info(f"Anzahl der Nennungen: {num_entries}/2500")
 
         # Analyse-Button
         if st.button("Analyse starten", use_container_width=True):
