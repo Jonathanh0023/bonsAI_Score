@@ -189,19 +189,16 @@ Antwort: [Die zu bewertende Antwort]
    - Unabhängig von Relevanz oder Detailgrad bewerten
 
 5. **Sprache**:
-   - Wenn die Frage auf Deutsch ist und die Antwort auf Englisch (oder umgekehrt): 
+   - Wenn die Frage Frage und die Antwort auf verschieden Sprachen sind, z.B. Frage auf Deutsch und Antwort auf Englisch: 
      * Sprache = 0, sonst 100
+     * Wenn Sprache = 0, dann setze alle Scores=0
+     * Bei Nonsense = 0
 
 **Gesamtwertung**:
 - Mathematischer Durchschnitt aller fünf Kriterien
 
-# Antwortsyntax (NUR DIESE ZEILEN AUSGEBEN)
-Relevanz: [Zahl]
-Klarheit: [Zahl]
-Detailgrad: [Zahl]
-Grammatik und Stil: [Zahl]
-Sprache: [Zahl]
-Gesamt: [Zahl]""",
+# Antwortsyntax (NUR DIESE ZEILE AUSGEBEN)
+Relevanz: [Zahl]; Klarheit: [Zahl]; Detailgrad: [Zahl]; Grammatik und Stil: [Zahl]; Sprache: [Zahl];Gesamt: [Zahl]""",
                 height=400,
                 help="Experimentiere mit verschiedenen Anweisungen und beobachte, wie sich die Bewertungen ändern."
             )
