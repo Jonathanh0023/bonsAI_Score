@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import io
+from openai import OpenAI
 
 # Seitenkonfiguration
 st.set_page_config(
@@ -28,32 +29,72 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# API-Endpunkt aus Secrets laden statt direkt im Code
-url = st.secrets["api"]["url"]
+# OpenAI Client initialisieren
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
-# Funktion zur Analyse einer Frage
+# Funktion zur Analyse einer Frage mit OpenAI Assistants API
 def analyze_question(frage, antwort):
-    body = {
-        "message": f"Zu bewertende Frage: {frage}. Zu bewertende Antwort: {antwort}",
-        "system_prompt": system_prompt
-    }
-    
     # Debug-Information in session_state speichern
     if "debug_info" not in st.session_state:
         st.session_state.debug_info = []
-    st.session_state.debug_info.append(body)
+    
+    message_content = f"Zu bewertende Frage: {frage}. Zu bewertende Antwort: {antwort}"
+    st.session_state.debug_info.append({"message": message_content, "system_prompt": system_prompt})
     
     try:
         with st.spinner(f'Analysiere Antwort: "{antwort}"...'):
-            response = requests.post(url, json=body)
-            response.raise_for_status()
-            data = response.json()
-            if data and "message" in data:
-                return data["message"].strip()
+            # Verwende den spezifischen Assistant aus den Secrets
+            assistant_id = st.secrets["assistant"]["id"]
+            
+            # Wenn kein Thread existiert, erstelle einen neuen
+            if "thread_id" not in st.session_state:
+                thread = client.beta.threads.create()
+                st.session_state.thread_id = thread.id
+            
+            # Nachricht zum Thread hinzufügen
+            client.beta.threads.messages.create(
+                thread_id=st.session_state.thread_id,
+                role="user",
+                content=message_content
+            )
+            
+            # Run erstellen und auf Abschluss warten
+            run = client.beta.threads.runs.create_and_poll(
+                thread_id=st.session_state.thread_id,
+                assistant_id=assistant_id
+            )
+            
+            if run.status == 'completed':
+                # Antwort abrufen
+                messages = client.beta.threads.messages.list(
+                    thread_id=st.session_state.thread_id
+                )
+                
+                # Die neueste Assistenten-Nachricht zurückgeben
+                for message in messages.data:
+                    if message.role == "assistant":
+                        return message.content[0].text.value.strip()
+                
+                return "Keine Antwort vom Assistenten erhalten"
             else:
-                return "Ungültiges Antwortformat"
-    except requests.RequestException as e:
+                return f"Fehler: Run-Status ist {run.status}"
+    except Exception as e:
         return f"Fehler: {e}"
+
+# Funktion zum Aktualisieren des Assistants
+def update_assistant(new_instructions):
+    try:
+        # Verwende den spezifischen Assistant aus den Secrets
+        assistant_id = st.secrets["assistant"]["id"]
+        
+        # Aktualisiere den Assistant mit neuen Anweisungen
+        client.beta.assistants.update(
+            assistant_id=assistant_id,
+            instructions=new_instructions
+        )
+        st.success("Assistant wurde mit neuen Anweisungen aktualisiert.")
+    except Exception as e:
+        st.error(f"Fehler beim Aktualisieren des Assistants: {e}")
 
 # Authentifizierung
 def check_password():
@@ -109,6 +150,28 @@ if check_password():
     # Container für DataFrame - Wird vor der Verwendung definiert
     results_container = st.container()
 
+    # Debug-Bereich für Entwickler
+    with st.expander("🛠️ Debug-Informationen (für Entwickler)", expanded=False):
+        st.subheader("OpenAI Assistants API Status")
+        
+        # Assistant-Status
+        assistant_id = st.secrets["assistant"]["id"]
+        st.success(f"✅ Assistant aktiv: {assistant_id}")
+        
+        # Thread-Status
+        if "thread_id" in st.session_state:
+            st.success(f"✅ Thread aktiv: {st.session_state.thread_id}")
+        else:
+            st.info("ℹ️ Ein Thread wird automatisch erstellt, wenn die erste Anfrage gestellt wird.")
+        
+        # API-Anfragen anzeigen
+        if "debug_info" in st.session_state and st.session_state.debug_info:
+            st.subheader("Letzte API-Anfragen")
+            for idx, info in enumerate(st.session_state.debug_info):
+                st.markdown(f"**Anfrage {idx+1}:**")
+                st.json(info)
+                st.markdown("---")
+
     # Zwei Spalten für die Haupteingaben
     col1, col2 = st.columns([1, 1])
 
@@ -158,6 +221,10 @@ if check_password():
                 - Experimentiere mit verschiedenen Skalen
                 """)
             
+            # Anzeige des verwendeten Assistants
+            assistant_id = st.secrets["assistant"]["id"]
+            st.info(f"Verwendeter Assistant: {assistant_id[:8]}...")
+            
             system_prompt = st.text_area(
                 "🤖 KI-Anweisungen (System Prompt):",
                 value="""Als Sprachassistent bist du darauf spezialisiert, die Qualität von offenen Antworten in Onlineumfragen zu bewerten.
@@ -202,6 +269,10 @@ Relevanz: [Zahl]; Klarheit: [Zahl]; Detailgrad: [Zahl]; Grammatik und Stil: [Zah
                 height=400,
                 help="Experimentiere mit verschiedenen Anweisungen und beobachte, wie sich die Bewertungen ändern."
             )
+            
+            # Button zum Aktualisieren des Assistants
+            if st.button("🔄 Assistant mit neuen Anweisungen aktualisieren"):
+                update_assistant(system_prompt)
             
             st.info("💡 Probiere verschiedene Varianten aus und vergleiche die Ergebnisse!")
         
